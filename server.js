@@ -6,7 +6,7 @@ app.get("/", (req, res) => {        // Cria endpoint na rota da raiz do projeto
   console.log("Rota GET / solicitada");
   res.json({
     message: "API para gestão de tarefas",   // ✅ descrição da sua API
-    author: "Seu Nome Completo"              // ✅ substitua pelo seu nome
+    author: "Heloísa Almeida Miranda"              // ✅ substitua pelo seu nome
   });
 });
 

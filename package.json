@@ -1,14 +1,14 @@
 {
   "name": "nome-sua-api",
   "version": "1.0.0",
-  "description": "descrição sua API",
+  "description": "descrição da sua API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "Seu Nome Completo",
+  "author": "Heloísa Almeida Miranda",
   "license": "ISC",
   "type": "module",
   "dependencies": {
