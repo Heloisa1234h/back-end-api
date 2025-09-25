@@ -59,5 +59,11 @@ app.get("/questoes", async (req, res) => {
   }
 });
 
-// Exportação necessária para o Vercel
-export default app;
+// ######
+// Local onde o servidor irá escutar as requisições
+// ######
+app.listen(port, () => {
+  // Inicia o servidor na porta definida
+  // Um socket para "escutar" as requisições
+  console.log(`Serviço rodando na porta:  ${port}`);
+});
