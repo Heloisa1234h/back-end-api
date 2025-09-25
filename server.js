@@ -1,3 +1,4 @@
+// server.js
 import express from "express";      // Requisição do pacote do express
 import dotenv from "dotenv";        // Requisição do pacote dotenv para variáveis de ambiente
 import { Pool } from "pg";          // Requisição do pacote pg para PostgreSQL
@@ -24,14 +25,14 @@ app.get("/", async (req, res) => {
   let dbStatus = "ok";  
 
   try {
-    await db.query("SELECT 1");
+    await db.query("SELECT 1"); 
   } catch (e) {
     dbStatus = e.message;  
   }
 
   res.json({
     message: "API para estudo de Node e Express",
-    author: "Jhonatan Diogo Rodrigues Nunes",
+    author: "Heloísa Almeida Miranda",  // Alteração do nome
     statusBD: dbStatus,
   });
 });
