@@ -1,33 +1,62 @@
 import express from "express";      // Requisição do pacote do express
-import dotenv from "dotenv";        // Requisição do pacote dotenv
-import { Client } from "pg";        // Requisição do pacote PostgreSQL (pg)
+import dotenv from "dotenv";        // Requisição do pacote dotenv para variáveis de ambiente
+import { Pool } from "pg";          // Requisição do pacote pg para PostgreSQL
 
-dotenv.config();                   // Carrega as variáveis de ambiente do arquivo .env
+dotenv.config();                   // Carrega e processa o arquivo .env
 
-const app = express();              // Instancia o Express
-const port = 3000;                  // Define a porta
+const app = express();             // Instancia o Express
+const port = process.env.PORT || 3000; // Usa a porta do Vercel ou 3000 localmente
 
-// Configuração do cliente PostgreSQL com variáveis de ambiente
-const client = new Client({
-  user: process.env.DB_USER,        // Usuário do banco de dados
-  host: process.env.DB_HOST,        // Host do banco de dados
-  database: process.env.DB_DATABASE, // Nome do banco de dados
-  password: process.env.DB_PASSWORD, // Senha do banco de dados
-  port: process.env.DB_PORT,        // Porta do banco de dados
+app.use(express.json());           // Middleware para trabalhar com JSON (POST/PUT futuramente)
+
+// Inicializa o Pool de conexão com o banco de dados
+const db = new Pool({  
+  connectionString: process.env.URL_BD,  // Conexão com o banco de dados via variáveis de ambiente
+  ssl: {
+    rejectUnauthorized: false, // Necessário em alguns provedores (Supabase, Neon, Render)
+  },
 });
 
-client.connect()                    // Conecta ao banco de dados PostgreSQL
-  .then(() => console.log("Conectado ao banco de dados PostgreSQL"))
-  .catch(err => console.error("Erro ao conectar ao banco de dados", err));
-
-app.get("/", (req, res) => {        // Cria endpoint na rota da raiz do projeto
+// Rota raiz para teste
+app.get("/", async (req, res) => {
   console.log("Rota GET / solicitada");
+
+  let dbStatus = "ok";  
+
+  try {
+    await db.query("SELECT 1");
+  } catch (e) {
+    dbStatus = e.message;  
+  }
+
   res.json({
-    message: "API para gestão de tarefas",   // ✅ descrição da sua API
-    author: "Heloísa Almeida Miranda"        // ✅ substitua pelo seu nome
+    message: "API para estudo de Node e Express",
+    author: "Jhonatan Diogo Rodrigues Nunes",
+    statusBD: dbStatus,
   });
 });
 
-app.listen(port, () => {            // Um socket para "escutar" as requisições
-  console.log(`Serviço rodando na porta: ${port}`);
+// Rota para retornar todas as questões
+app.get("/questoes", async (req, res) => {
+  console.log("Rota GET /questoes solicitada");
+
+  try {
+    const resultado = await db.query("SELECT * FROM questoes ORDER BY id ASC"); // Consulta ordenada
+    const data = resultado.rows;
+
+    if (data.length === 0) {
+      return res.status(404).json({ mensagem: "Nenhuma questão encontrada" });
+    }
+
+    res.json(data);
+  } catch (e) {
+    console.error("Erro ao buscar questões:", e);
+    res.status(500).json({
+      erro: "Erro interno do servidor",
+      mensagem: "Não foi possível buscar as questões",
+    });
+  }
 });
+
+// Exportação necessária para o Vercel
+export default app;
